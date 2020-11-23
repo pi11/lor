@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Пользователи по отношению talks/тех.разделы{% endblock %}
+{% block content %}
+<h1>Пользователи по отношению talks/тех.разделы. Страница ({{ page_id }} из {{ paginator.num_pages }})</h1>
+
+<ul>
+{% for u in page.object_list %}
+<li class="av {% cycle 'even' 'odd' %}"><div class="y">{{ forloop.counter|add:add_p }}</div> 
+  <div class="y" style="width:150px; "><img src="{{ u.get_avatar }}" height="100%" /></div>
+<div style="width:250px;"><a href="{% url 'profile' username=u.username %}">{{ u.username }}</a></div> <b>{{ u.trollolo|floatformat }}</b></li>
+{% endfor %}
+</ul>
+{% include "paginator.html" %}
+
+<br />
+(Учитываются только пользователи с количеством сообщений > 100)
+
+{% endblock %}

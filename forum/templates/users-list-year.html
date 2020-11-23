@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Топ 50 пользователей за {{ year }} год{% endblock %}
+{% block content %}
+<h1>Топ 50 пользователей за {{ year }} год</h1>
+
+<ul>
+{% for u in profiles %}
+<li class="av {% cycle 'even' 'odd' %}">
+  <div class="y">{{ forloop.counter }}</div>
+  <div class="y" style="width:150px; "><img src="{{ u.get_avatar }}" height="100%" /></div>
+  <div style="width:350px;">
+    <a href="{% url 'profile' username=u.username %}">{{ u.username }}</a>
+  </div> 
+</li>
+{% endfor %}
+</ul>
+
+<br />
+Также посмотрите топ 50 пользователей по месяцам:<br />
+  {% for m in months %}
+  <a href="{% url 'users_list_month' year m %}">{{ m }}</a>{% if forloop.last %}{% else %},{% endif %}
+  {% endfor %}
+
+{% endblock %}

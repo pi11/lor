@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Самые длинные сообщения{% endblock %}
+{% block content %}
+<h1>Самые длинные сообщения:</h1>
+<ul>
+{% for u in comments %}
+<li class="{% cycle 'even' 'odd' %}">
+  <div class="y">{{ forloop.counter }}</div>
+  <a href="{{ u.url }}">{{ u.url }}</a></li>
+{% endfor %}
+</ul>
+{% endblock %}

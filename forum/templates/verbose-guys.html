@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Топ 100 пользователей по длине сообщений{% endblock %}
+{% block content %}
+<h1>Топ 100 пользователей пишуших самые длинные сообщения.</h1>
+
+
+
+<ul>
+<li class="" style="background-color:gray; font-weight:bold; color:#fff;"><div class="y">#</div> <div style="width:250px;">Пользователь</div> Количество символов на сообщение (среднее)</li>
+{% for u in users %}
+<li class="av {% cycle 'even' 'odd' %}"><div class="y">{{ forloop.counter }}</div> 
+<div style="width:250px;"><a href="{% url 'profile' username=u.user.username %}">{{ u.user.username }}</a></div> - <b>{{ u.avglen|intcomma }}</b></li>
+{% endfor %}
+</ul>
+<br />
+<p>Учитываются пользователи с количеством сообщений > 500.<br />
+Данные немного завышены т.к. в сообщениях присутствуют элементы HTML разметки.</p>
+
+
+{% endblock %}

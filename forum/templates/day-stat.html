@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Статистика за {{ year }} год, за {{ month.get_desc }} {% endblock %}
+{% block content %}
+  <h1>Статистика сообщений за <a href="{% url 'year_stat' year %}">{{ year }}</a> год, за {{ month.get_desc }}  </h1>
+
+  <div style="width:910px; padding:10px;">
+    <canvas id="myChart" width="900" height="400"></canvas>
+    <script>
+
+     var ctx = $("#myChart").get(0).getContext("2d");
+     var myNewChart = new Chart(ctx);
+
+     var data = {
+       labels: [{% for y in days %}'{{ y.day|floatformat }}',{% endfor %}],
+           datasets: [
+               {
+                   label: "Статистика сообщений",
+                   fillColor: "rgba(151,187,205,0.2)",
+                   strokeColor: "rgba(151,187,205,1)",
+                   pointColor: "rgba(151,187,205,1)",
+                   pointStrokeColor: "#fff",
+                   pointHighlightFill: "#fff",
+                   pointHighlightStroke: "rgba(220,220,220,1)",
+                   data: [{% for y in days %}{{ y.uniq }},{% endfor %}]
+               },
+               {
+                   label: "Статистика сообщений",
+                   fillColor: "rgba(220,220,220,0.2)",
+                   strokeColor: "rgba(220,220,220,1)",
+                   pointColor: "rgba(220,220,220,1)",
+                   pointStrokeColor: "#fff",
+                   pointHighlightFill: "#fff",
+                   pointHighlightStroke: "rgba(220,220,220,1)",
+                   data: [{% for y in days %}{{ y.count }},{% endfor %}]
+               },
+           ]
+       };
+    new Chart(ctx).Line(data, {
+        bezierCurve: false
+    });
+
+    </script>
+
+    <br />
+    <div class="col-md-12">
+      <h4>Легенда:</h4>
+      <span style="border:2px rgba(151,187,205,1) solid; background-color:rgba(151,187,205,0.2);">&nbsp;&nbsp;&nbsp;&nbsp;</span> - количество пользователей написавших хотя бы одно сообщение.<br /><br />
+      <span style="border:2px rgba(220,220,220,1) solid; background-color:rgba(220,220,220,0.2);">&nbsp;&nbsp;&nbsp;&nbsp;</span> - количество сообщений<br />
+    </div>
+  </div>
+
+
+{% endblock %}

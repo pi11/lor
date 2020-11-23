@@ -1,0 +1,44 @@
+<html>
+<head>
+  <title>{% block title %}Лор Статистика{% endblock %}</title>
+  <link href="{{ STATIC_URL }}css/main.css?id=0" type="text/css" rel="stylesheet" />
+  <link href="{{ STATIC_URL}}images/i.ico" rel="shortcut icon">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+  <script src="{{ STATIC_URL }}js/Chart.js"></script>
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+
+{% block add_head %}
+{% endblock %}
+</head>
+<body>
+  <div id="header">
+      <a href="/"><h1>lor-stat</h1></a> 
+      <form action="/">Пользователь: <input text name="username" /> <input type="submit" value="Ок" /></form>
+  </div>
+  <div id="content" class="col-md-12">
+    {% block content %}
+    {% endblock %}
+  </div>
+
+  <div id="footer">
+    &copy; <a href="http://linux.org.ru/">Linux.org.ru</a>
+
+    <br /><span class="s">Powered by BolgenOS (Special Gold Edition)</span>
+
+    <!--LiveInternet counter--><script type="text/javascript"><!--
+document.write("<a href='http://www.liveinternet.ru/click' "+
+"target=_blank><img src='//counter.yadro.ru/hit?t26.6;r"+
+escape(document.referrer)+((typeof(screen)=="undefined")?"":
+";s"+screen.width+"*"+screen.height+"*"+(screen.colorDepth?
+screen.colorDepth:screen.pixelDepth))+";u"+escape(document.URL)+
+";"+Math.random()+
+"' alt='' title='LiveInternet: показано число посетителей за"+
+" сегодня' "+
+"border='0' width='0' height='15'><\/a>")
+//--></script><!--/LiveInternet-->
+
+  </div>
+  {% block footer_add %}
+  {% endblock %}
+</body>
+</html>

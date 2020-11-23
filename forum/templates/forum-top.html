@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Топ пользователей на форуме {{ f.name }}{% endblock %}
+{% block content %}
+
+
+
+
+<h1>Статистика сообщений в форуме <a href="{{ f.url }}">{{ f.name }}</a></h1>
+
+  <div class="col-md-12">
+    <canvas id="myChart" width="900" height="400"></canvas>
+    <script>
+
+     var ctx = $("#myChart").get(0).getContext("2d");
+     var myNewChart = new Chart(ctx);
+ var month = new Array();
+ month[1] = "Январь";
+ month[2] = "Февраль";
+ month[3] = "Март";
+ month[4] = "Апрель";
+ month[5] = "Май";
+ month[6] = "Июнь";
+ month[7] = "Июль";
+ month[8] = "Август";
+ month[9] = "Сентябрь";
+ month[10] = "Октябрь";
+ month[11] = "Ноябрь";
+ month[12] = "Декабрь";
+
+     var data = {
+       labels: [{% for y in years %}[{{ y.year|floatformat }}],{% endfor %}],
+           datasets: [
+               {
+                   label: "Статистика сообщений",
+                   fillColor: "rgba(151,187,205,0.2)",
+                   strokeColor: "rgba(151,187,205,1)",
+                   pointColor: "rgba(151,187,205,1)",
+                   pointStrokeColor: "#fff",
+                   pointHighlightFill: "#fff",
+                   pointHighlightStroke: "rgba(220,220,220,1)",
+                   data: [{% for y in years %}{{ y.count }},{% endfor %}]
+               },
+
+           ]
+       };
+    new Chart(ctx).Line(data, {
+        bezierCurve: false,
+     {% verbatim %}
+     legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+                  {% endverbatim %}
+                                                                                                                                                                                                                                         
+
+    });
+
+    </script>
+    <br />
+    <div class="col-md-12">
+      <h4>Легенда:</h4>
+      <span style="border:2px rgba(151,187,205,1) solid; background-color:rgba(151,187,205,0.2);">&nbsp;&nbsp;&nbsp;&nbsp;</span> &mdash; количество сообщений<br />
+      <br />
+
+    </div>
+
+  Также можно, посмотреть данные за любой год:<br />
+  {% for y in tyears %}
+  <a href="{% url 'forum_year_stat' forum_name=f.name year=y %}">{{ y }}</a>{% if forloop.last %}{% else %},{% endif %}
+  {% endfor %}
+      <br />
+      <br />
+
+
+  </div>
+
+
+
+<h2>Top пользователей в форуме {{ f.name }} - <a href="{{ f.url }}">{{ f.url }}</a>:</h2>
+<ul>
+{% for t in top %}
+<li><div class="c">{{ forloop.counter }} - </div>
+<div class="u"><a href="{% url 'profile' username=t.0 %}">{{ t.0 }}</a></div> - <b>{{ t.1|intcomma }}</b></li>
+{% endfor %}
+</ul>
+{% endblock %}

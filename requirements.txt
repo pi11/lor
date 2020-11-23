@@ -1,0 +1,6 @@
+django
+psycopg2
+python-memcached
+numpy
+matplotlib
+-e git+https://github.com/gawel/pyquery#egg=pyquery

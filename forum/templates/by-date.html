@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Топы по годам и месяцам{% endblock %}
+{% block content %}
+<h1>Топ {% if year %}за {{ year }} год {% if month %} {{ month }} месяц {% endif %}{% else %}по годам и месяцам{% endif %}</h1>
+
+<div style="width:340px">
+{% if year %}
+  <div class="head p5" style="width:340px;">
+    <div class="c"># </div>
+    <div class="u">Пользователь </div>
+    <div>Сообщений</div>
+  </div>
+  {% for t in top_users %}
+  <div class="{% cycle 'even' 'odd' %} p5" style="width:340px;">
+    <div class="c">{{ forloop.counter }} - </div>
+    <div class="u"><a href="{% url 'profile' username=t.0 %}">{{ t.0 }}</a> </div>
+    <div> - <b>{{ t.1|intcomma }}</b></div>
+  </div>
+  {% endfor %}
+{% endif %}
+<hr />
+</div>
+<div style="padding-left:20px;">
+<b>Выберете год:</b><br /><br />
+
+{% for y in years %}
+<a href="{% url 'bydate' year=y %}">{% if year == y %}<b>{{ y }}</b>{% else %}{{ y }}{% endif %}</a>
+{% endfor %}
+<br />
+<br /><br />
+{% if year %}
+<b>Выберете месяц:</b><br /><br />
+{% for m in months %}
+<a href="{% url 'bydate' year=year month=m.0|floatformat %}">{{ m.0|floatformat }}</a>
+{% endfor %}
+{% endif %}
+<br />
+</div>
+
+{% endblock %}

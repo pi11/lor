@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Самые длинные треды ЛОРа{% endblock %}
+
+{% block content %}
+<h2>Toп длинных тредов{% if year %} за {{ year }} год{% else %} за все время{% endif %}:</h2>
+<ul>
+{% for t in top %}
+<li><div class="c">{{ forloop.counter }}  </div><a href="{{ t.0 }}">{{ t.2|safe }}</a> &nbsp;&nbsp;({{ t.1 }})</b></li>
+{% endfor %}
+</ul>
+
+<div class="w100">
+<br /><br />
+<b>Топ тредов по годам</b>:
+<br />
+<a href="{% url 'top_threads' %}">[За все время]</a> &nbsp; 
+{% for y in years %}
+<a href="{% url 'top_threads_year' year=y %}">[{{ y }}]</a> &nbsp; 
+{% endfor %}
+</div>
+{% endblock %}

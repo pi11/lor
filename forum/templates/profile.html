@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Пользователь {{ p.username }}{% endblock %}
+{% block content %}
+
+<img src="{{ p.get_avatar }}" />
+
+<h1>Пользователь: <a href="http://www.linux.org.ru/people/{{ p.username }}/profile">{{ p.username }}</a></h1>
+
+<p>
+  Пользователь занимает <b>{{ p.user_place }}</b> место в <a href="{% url 'users_list' %}">общем списке</a>. <br />
+  Всего <b>{{ p.total_msg|intcomma }}</b> сообщений. <br />
+  Сообщений <a href="{% url 'no_talks' %}">без раздела talks</a> - <b>{{ p.notalks|intcomma }}</b>.<br />
+  Всего начал <b title='Параметр будет доступен со временем'>?<!--{{ p.themes|intcomma }}--></b> тем. <br />
+  Отношение <a href="{% url 'talkers' %}">(talks/остальные разделы)</a>: <b title="Уровень троллинга =)">{{ p.trollolo|floatformat }}</b>, {{ p.trollolo_place }} место.
+  <br />
+
+  <a href="{% url 'cit' %}">Индекс упоминаний: {{ p.citindex.count }}</a>
+</p>
+
+
+
+<hr />
+<div>
+
+<canvas id="myChart" width="700" height="400"></canvas>
+<script>
+
+ var ctx = $("#myChart").get(0).getContext("2d");
+ var myNewChart = new Chart(ctx);
+
+   var data = {
+       labels: [{% for y in stat_years %}'{{ y.1|floatformat }}',{% endfor %}],
+       datasets: [
+           {
+               label: "My First dataset",
+               fillColor: "rgba(151,187,205,0.2)",
+               strokeColor: "rgba(151,187,205,1)",
+               pointColor: "rgba(151,187,205,1)",
+               pointStrokeColor: "#fff",
+               pointHighlightFill: "#fff",
+               pointHighlightStroke: "rgba(220,220,220,1)",
+               data: [{% for y in stat_years %}{{ y.0 }},{% endfor %}]
+           },
+       ]
+   };
+new Chart(ctx).Line(data, {
+    bezierCurve: false
+});
+
+</script>
+
+<div class="col-md-12">
+  <h2>Статистика по разделам:</h2>
+  <ul>
+    {% for u in user_stat %}
+    <li><div style="width:150px;"><a href="{{ u.2 }}">{{ u.1 }}</a></div> - <b>{{ u.0|intcomma }}</b></li>
+    {% endfor %}
+  </ul>
+
+  <br />
+  <h2>Статистика по годам:</h2>
+  <ul>
+    {% for u in stat_years %}
+    <li><div class="y"><a href="{% url 'profile_year' username=p.username year=u.1|floatformat %}">{{ u.1|floatformat }}</a></div> - <b>{{ u.0|intcomma }}</b></li>
+    {% endfor %}
+  </ul>
+</div>
+
+
+
+<br />
+<a href="{{ MEDIA_URL }}profiles/{{ p.pk }}-years.png">Старая версия графика</a>
+</div>
+
+<div class="w100 p5" style="color:#fff">ЛорСтат звание: {{ lol }} =)</div>
+
+<div class="w100 p5">
+<h2>Профиль с ЛОРа (Обновляется редко):</h2>
+{{ p.about|safe }}
+</div>
+
+
+<div class="w100 p5">
+  {% for c in comments %}
+  <div class="comment">
+    <div class="nick" title="{{ c.ua }}"><a href="#c-{{ c.id }}" name="c-{{ c.id }}">{{ c.nick }}</a><br />
+     написал <span title="{{ c.publication_date }}">{{ c.publication_date|naturalday }}:</span></div>
+    <div class="text">{{ c.text|linebreaks }}</div>
+  </div>
+  {% endfor %}
+  <div style="padding-top:20px;">
+  {{ form.errors }}
+  <b>Добавить комментарий:</b><br /><br />
+  <form action="" method="post">{% csrf_token %}
+    Имя:<br /> {{ form.nick }}<br />
+    Текст:<br /> {{ form.text }}
+    <br />    <br />
+    <input type="submit" value="Добавить комментарий" />
+    </form >
+  </div>
+</div>
+{% endblock %}

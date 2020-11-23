@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Статистика пользователя {{ p.username }} за {{ year }} год{% endblock %}
+{% block content %}
+<div class="con">
+<hr />
+<div class="avatar">
+  <img src="{{ mstore.ms.user.get_avatar }}" width="150px;"/>
+</div>
+<div class="message">
+  {{ mstore.text|safe }}
+</div>
+
+<div class="info">
+  Дата: {{ mstore.ms.publication_date }}
+  <a href="{{ mstore.ms.thread.url }}{% if mstore.ms.thread.lor_id != mstore.ms.lor_message_id %}?cid={{ mstore.ms.lor_message_id }}{% endif %}" rel="nofollow">Ссылка на сообщение</a>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block add_head %}
+<meta name="google-site-verification" content="H17uBPopgKFPSkqx64lRI8UUeAj5NCKoHdsk_YP6jUY" />
+<script>
+ $(document).ready(function() {
+	 s = navigator.userAgent;
+	 if (s.indexOf("Windows") != -1) {
+		 $("#win").show();
+		 $("#header").html('<style>body {font-family: "Comic Sans MS", "Comic Sans", cursive;}</style>');
+	 }
+ });
+</script>
+{% endblock %}
+{% block content %}
+
+<div class="col-lg-12 col-sm-12">
+  <div style="min-width:710px;" class="col-md-12 col-lg-6">
+
+  <h2>График сообщений по годам:</h2>
+
+    <canvas id="myChart" width="700" height="400"></canvas>
+    <script>
+
+     var ctx = $("#myChart").get(0).getContext("2d");
+     var myNewChart = new Chart(ctx);
+
+       var data = {
+           labels: [{% for y in years %}'{{ y.year|floatformat }}',{% endfor %}],
+           datasets: [
+               {
+                   label: "График сообщений по годам",
+                   fillColor: "rgba(151,187,205,0.2)",
+                   strokeColor: "rgba(151,187,205,1)",
+                   pointColor: "rgba(151,187,205,1)",
+                   pointStrokeColor: "#fff",
+                   pointHighlightFill: "#fff",
+                   pointHighlightStroke: "rgba(220,220,220,1)",
+                   data: [{% for y in years %}{{ y.count }},{% endfor %}]
+               },
+           ]
+       };
+    new Chart(ctx).Line(data, {
+        bezierCurve: false
+    });
+
+    </script>
+
+  </div>
+
+
+  <div style="min-width:710px;" class="col-md-12 col-lg-6">
+  
+  <h2>График сообщений за <a href="{% url 'year_stat' last_year.year %}">{{ last_year.year }}</a> год:</h2>
+
+    <canvas id="myChart2" width="700" height="400"></canvas>
+    <script>
+
+     var ctx = $("#myChart2").get(0).getContext("2d");
+     var myNewChart = new Chart(ctx);
+     var month = new Array();
+     month[1] = "Январь";
+     month[2] = "Февраль";
+     month[3] = "Март";
+     month[4] = "Апрель";
+     month[5] = "Май";
+     month[6] = "Июнь";
+     month[7] = "Июль";
+     month[8] = "Август";
+     month[9] = "Сентябрь";
+     month[10] = "Октябрь";
+     month[11] = "Ноябрь";
+     month[12] = "Декабрь";
+
+       var data = {
+           labels: [{% for y in months %}month[{{ y.month }}],{% endfor %}],
+           datasets: [
+               {
+                   label: "График сообщений по месяцам",
+                   fillColor: "rgba(151,187,205,0.2)",
+                   strokeColor: "rgba(151,187,205,1)",
+                   pointColor: "rgba(151,187,205,1)",
+                   pointStrokeColor: "#fff",
+                   pointHighlightFill: "#fff",
+                   pointHighlightStroke: "rgba(220,220,220,1)",
+                   data: [{% for y in months %}{{ y.count }},{% endfor %}]
+               },
+           ]
+       };
+    new Chart(ctx).Line(data, {
+        bezierCurve: false
+    });
+
+    </script>
+
+  </div>
+
+
+  <div style="min-width:710px;" class="col-md-12 col-lg-6">
+
+
+  <h2>График сообщений за <a href="{% url 'month_stat' last_month.year.year last_month.month %}">{{ last_month.get_desc }}</a>:</h2>
+
+    <canvas id="myChart3" width="700" height="400"></canvas>
+    <script>
+
+     var ctx = $("#myChart3").get(0).getContext("2d");
+     var myNewChart = new Chart(ctx);
+
+       var data = {
+           labels: [{% for y in days %}'{{ y.day|floatformat }}',{% endfor %}],
+           datasets: [
+               {
+                   label: "График сообщений за месяц",
+                   fillColor: "rgba(151,187,205,0.2)",
+                   strokeColor: "rgba(151,187,205,1)",
+                   pointColor: "rgba(151,187,205,1)",
+                   pointStrokeColor: "#fff",
+                   pointHighlightFill: "#fff",
+                   pointHighlightStroke: "rgba(220,220,220,1)",
+                   data: [{% for y in days %}{{ y.count }},{% endfor %}]
+               },
+           ]
+       };
+    new Chart(ctx).Line(data, {
+        bezierCurve: false
+    });
+
+    </script>
+
+  </div>
+</div>
+
+<div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+
+  <h2>Toп {{ top }} <a href="{% url 'users_list' %}">пользователей</a>:</h2>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <td>Пользователь</td>
+        <td>Сообщений</td>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in top_users %}
+      <tr>
+        <td><a href="{% url 'profile' username=t.username %}">{{ t.username }}</a></td>
+        <td><b>{{ t.total_msg|intcomma }}</b></td>
+      </tr>
+      {% endfor %}     
+    </tbody>
+  </table>
+  Также посмотрите топ 50 пользователей за любой год: <br />
+  {% for y in years %}
+  <a href="{% url 'users_list_year' y.year %}">{{ y.year }}</a>{% if forloop.last %}{% else %},{% endif %}
+  {% endfor %}
+  
+</div>
+
+<div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+  <a name="yearstat"></a>
+  <h2>Статистика по годам:</h2>
+  <p>Кликните на любой год для просмотра графика</p>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <td>Год</td>
+        <td>Сообщений</td>
+      </tr>
+    </thead>
+    <tbody>
+      {% for y in years %}
+      <tr>
+        <td><a href="{% url 'year_stat' y.year %}">{{ y.year }}</a></td>
+        <td><b>{{ y.count|intcomma }}</b></td>
+      </tr>
+      {% endfor %}     
+    </tbody>
+  </table>
+</div>
+
+
+
+<div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+
+  <h2>Топ пользователей по форумам:</h2>
+
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <td>Форум</td>
+        <td>URI</td>
+        <td>Сообщений</td>
+        <td>Статистика по годам</td>
+
+      </tr>
+    </thead>
+    <tbody>
+      {% for f in forums %}
+      <tr>
+        <td>
+          <a href="{% url 'forum_top' forum_name=f.name %}">{{ f.name }}</a>  
+        </td>
+        <td><a href="{{ f.url }}">{{ f.url }}</a></td>
+        <td>{{ f.messages|intcomma }}</td>
+        <td><a href="{% url 'forum_year_stat' forum_name=f.name year=last_year.year %}">{{ f.name }}</a></td>
+      </tr>
+      {% endfor %}     
+    </tbody>
+  </table>
+</div>
+
+
+<div class="col-md-12">
+  <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+
+    <h2>Пользователи по</h2>
+    - <a href="{% url 'users_list' %}">количеству сообщений</a> <br />
+    - <a href="{% url 'topic_starters' %}">количеству начатых тем</a> <br />
+    - <a href="{% url 'talkers' %}">отношению talks/тех.разделы</a> <br />
+    - <a href="{% url 'no_talks' %}">количеству сообщений без talks</a> <br />
+    - <a href="{% url 'verbose_guys' %}">длине сообщений (самые многословные)</a> <br />
+    - <a href="{% url 'brief_guys' %}">длине сообщений (самые лаконичные)</a> <br />
+    - <a href="{% url 'bydate' %}">датам</a> <br />
+    - <a href="{% url 'top_news_makers' %}">по количеству новостей</a> <br />
+  </div>
+  <div class="col-lg-3 col-md-4 col-sm6 col-xs-12">
+    <h3>Топы:</h3>
+    <ul>
+      <li><a href="{% url 'top_long' %}">Самые длинные ники</a></li>
+      <li><a href="{% url 'long_comments' %}">Самые длинные сообщения</a></li>
+
+    </ul>
+
+    <h2>Анализ содержания постов:</h2>
+    <ul>
+      <li><a href="http://vpoisk.tv/user/playlist/8/">Видео, ссылки на которые размещали пользователи ЛОРа</a></li>
+    </ul>
+  </div>
+</div>
+<div class="col-md-12">
+  <h2>Последние комментарии:</h2>
+  <ul>
+    {% for c in last_comments %}
+    <li>- {{ c.nick }} написал ({{ c.publication_date|naturalday }}, к профайлу {{ c.userprofile.username }}): <a title="{{ c.text }}" href="{% url 'profile' username=c.userprofile.username %}#c-{{ c.id }}"> {{ c.text|truncatewords:5 }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+<div class="col-md-12">
+    <p>
+      Некоторые старые графики:
+      <a href="{{ MEDIA_URL }}stat/lor.png">График сообщений по годам</a>, <a href="{{ MEDIA_URL }}stat/lor-detailed.png">большой график сообщений по годам</a>
+    </p>
+</div>
+
+</div>
+{% endblock %}
+
+{% block footer_add %}
+
+<script type="text/javascript">
+    var reformalOptions = {
+        project_id: 64486,
+        project_host: "lor.reformal.ru",
+        tab_orientation: "bottom-right",
+        tab_indent: "10px",
+        tab_bg_color: "#ffffff",
+        tab_border_color: "#f2e794",
+        tab_image_url: "http://tab.reformal.ru/QWJjLi4u/f2e794/06778c72a7f98d2c2522ffec8673bd90/bottom-right/1/tab.png",
+        tab_border_width: 0
+    };
+    
+    (function() {
+        var script = document.createElement('script');
+        script.type = 'text/javascript'; script.async = true;
+        script.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'media.reformal.ru/widgets/v3/reformal.js';
+        document.getElementsByTagName('head')[0].appendChild(script);
+    })();
+</script><noscript><a href="http://reformal.ru"><img src="http://media.reformal.ru/reformal.png" /></a><a href="http://lor.reformal.ru">Oтзывы и предложения для Статистика пользователей сайта linux.org.ru</a></noscript>
+{% endblock %}

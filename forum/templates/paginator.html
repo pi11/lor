@@ -1,0 +1,20 @@
+<div class="paginator">
+
+<h4>Страницы:</h4>
+{% if page_range|length > 1 %}
+<ul class="pagination">
+
+  {% if page.has_previous %}
+  <li><a href='?p={{ page.previous_page_number }}' class='page_prev'><<</a></li>
+  {% endif %}
+
+  {% for p in page_range %}
+  <li><a href="?p={{ p }}" class='page{% ifequal p page.number %} active_page{% endifequal %}'>{{ p }}</a></li>
+  {% endfor %}
+
+  {% if page.has_next %}
+  <li><a href='?p={{ page.next_page_number }}' class='page_prev'>>></a></li>
+  {% endif %}
+</ul>
+{% endif %}
+</div>

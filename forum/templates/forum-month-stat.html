@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Статистика форума {{ f }} за {{ year }} {% endblock %}
+{% block content %}
+  <h1>Статистика сообщений в форуме {{ f }} за <a href="{% url 'year_stat' year %}">{{ year }}</a> год{% if cmp_months %} в сравнении с {{ cyear }}{% else %}{% endif %}</h1>
+  
+  <div class="col-md-12">
+    <canvas id="myChart" width="900" height="400"></canvas>
+    <script>
+
+     var ctx = $("#myChart").get(0).getContext("2d");
+     var myNewChart = new Chart(ctx);
+ var month = new Array();
+ month[1] = "Январь";
+ month[2] = "Февраль";
+ month[3] = "Март";
+ month[4] = "Апрель";
+ month[5] = "Май";
+ month[6] = "Июнь";
+ month[7] = "Июль";
+ month[8] = "Август";
+ month[9] = "Сентябрь";
+ month[10] = "Октябрь";
+ month[11] = "Ноябрь";
+ month[12] = "Декабрь";
+
+     var data = {
+       labels: [{% for y in months %}month[{{ y.month|floatformat }}],{% endfor %}],
+           datasets: [
+               {
+                   label: "Статистика соощений за {{ year }} год",
+                   fillColor: "rgba(151,187,205,0.2)",
+                   strokeColor: "rgba(151,187,205,1)",
+                   pointColor: "rgba(151,187,205,1)",
+                   pointStrokeColor: "#fff",
+                   pointHighlightFill: "#fff",
+                   pointHighlightStroke: "rgba(220,220,220,1)",
+                   data: [{% for y in months %}{{ y.uniq }},{% endfor %}]
+               },
+
+               {
+                label: "Уникальных пользователей",
+                fillColor: "rgba(220,220,220,0.2)",
+                strokeColor: "rgba(220,220,220,1)",
+                pointColor: "rgba(220,220,220,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(220,220,220,1)",
+                data: [{% for y in months %}{{ y.count }},{% endfor %}]
+              },
+ 
+           {% if cmp_months %}
+               {
+                label: "Год для сравнения",
+                fillColor: "rgba(120,120,220,0.2)",
+                strokeColor: "rgba(120,120,220,1)",
+                pointColor: "rgba(120,120,220,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(220,220,220,1)",
+                data: [{% for y in cmp_months %}{{ y.count }},{% endfor %}]
+              },
+           {% endif %}
+           ]
+       };
+    new Chart(ctx).Line(data, {
+        bezierCurve: false,
+     {% verbatim %}
+     legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+                  {% endverbatim %}
+                                                                                                                                                                                                                                         
+
+    });
+
+    </script>
+    <br />
+    <div class="col-md-12">
+      <h4>Легенда:</h4>
+      <span style="border:2px rgba(151,187,205,1) solid; background-color:rgba(151,187,205,0.2);">&nbsp;&nbsp;&nbsp;&nbsp;</span> &mdash; количество пользователей написавших хотя бы одно сообщение<br /><br />
+      <span style="border:2px rgba(220,220,220,1) solid; background-color:rgba(220,220,220,0.2);">&nbsp;&nbsp;&nbsp;&nbsp;</span> &mdash; количество сообщений в месяц<br />
+      {% if cmp_months %}
+      <br />
+      <span style="border:2px rgba(120,120,220,1) solid; background-color:rgba(120,120,120,0.2);">&nbsp;&nbsp;&nbsp;&nbsp;</span> &mdash; количество сообщений в месяц, в {{ cyear }} году<br />
+      {% endif %}
+    </div>
+
+
+  </div>
+
+<div class="col-md-12">
+  <h2>Статистика по месяцам ({{ f }}):</h2>
+  <p>Кликните на любой месяц для просмотра графика</p>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <td>Месяц</td>
+        <td>Сообщений</td>
+        <td>Пользователей</td>
+      </tr>
+    </thead>
+    <tbody>
+      {% for y in months %}
+      <tr>
+        <td><a href="{% url 'forum_month_stat' forum_name=f.name year=y.year.year month=y.month %}">{{ y.get_desc }}</a></td>
+        <td><b>{{ y.count|intcomma }}</b></td>
+        <td><b>{{ y.uniq|intcomma }}</b></td>
+      </tr>
+      {% endfor %}     
+    </tbody>
+  </table>
+</div>
+<div class="col-md-12">
+  Также можно,  посмотреть данные за другой год:<br />
+  {% for y in years %}
+  {% if year != y %}
+  <a href="{% url 'forum_year_stat' forum_name=f.name year=y %}">{{ y }}</a>{% if forloop.last %}{% else %},{% endif %}
+  {% endif %}
+  {% endfor %}
+
+  <br />
+  <br />
+
+  Сравнить показатели с другим годом: <br />
+  {% for y in years %}
+  {% if year != y %}
+  <a href="{% url 'forum_year_stat' forum_name=f.name year=year cyear=y %}">{{ y }}</a>{% if forloop.last %}{% else %},{% endif %}
+  {% endif %}
+  {% endfor %}
+
+<br /><br />
+</div>
+
+
+{% endblock %}

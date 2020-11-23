@@ -1,0 +1,9 @@
+*~
+*.pyc
+garbage
+davsclient_ancient.py
+tests/cache
+media/icons/deployed
+media/*
+local_settings.py
+

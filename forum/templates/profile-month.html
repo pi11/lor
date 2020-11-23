@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Статистика пользователя {{ p.username }} за {{ year }} год{% endblock %}
+{% block content %}
+<h1>Пользователь: <a href="{% url 'profile' username=p.username %}">{{ p.username }}</a>, статистика сообщений за {{ year }} год</h1>
+
+<hr />
+<!--
+<div style="width:200px;">
+<ul>
+{% for u in stat_months %}
+<li><div class="y"><b>{{ u.1|floatformat }}</b></div> - <b>{{ u.0|intcomma }}</b></li>
+{% endfor %}
+</ul>
+</div>
+<div>
+-->
+<canvas id="myChart" width="700" height="400"></canvas>
+<script>
+ function resize(){
+  var w=window.innerWidth
+  || document.documentElement.clientWidth
+  || document.body.clientWidth;
+  w = w - 200;
+  $("#myChart").width = w;
+  document.getElementById('myChart').width = w;
+ 
+ }
+
+ var ctx = $("#myChart").get(0).getContext("2d");
+ var myNewChart = new Chart(ctx);
+ var month = new Array();
+ month[1] = "Январь";
+ month[2] = "Февраль";
+ month[3] = "Март";
+ month[4] = "Апрель";
+ month[5] = "Май";
+ month[6] = "Июнь";
+ month[7] = "Июль";
+ month[8] = "Август";
+ month[9] = "Сентябрь";
+ month[10] = "Октябрь";
+ month[11] = "Ноябрь";
+ month[12] = "Декабрь";
+
+   var data = {
+       labels: [{% for y in stat_months %}month[{{ y.1|floatformat }}],{% endfor %}],
+       datasets: [
+           {
+               label: "Статистика сообщений",
+               fillColor: "rgba(151,187,205,0.2)",
+               strokeColor: "rgba(151,187,205,1)",
+               pointColor: "rgba(151,187,205,1)",
+               pointStrokeColor: "#fff",
+               pointHighlightFill: "#fff",
+               pointHighlightStroke: "rgba(220,220,220,1)",
+               data: [{% for y in stat_months %}{{ y.0 }},{% endfor %}]
+           },
+           {% if cmp_stat_months %}
+               {
+                label: "/",
+                fillColor: "rgba(220,220,220,0.2)",
+                strokeColor: "rgba(220,220,220,1)",
+                pointColor: "rgba(220,220,220,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(220,220,220,1)",
+                data: [{% for y in cmp_stat_months %}{{ y.0 }},{% endfor %}]
+              },
+           {% endif %}
+
+       ]
+   };
+new Chart(ctx).Line(data, {
+    bezierCurve: false
+});
+
+</script>
+
+<br />
+<a href="{{ MEDIA_URL }}profiles/{{ p.pk }}-{{ year }}.png">Старая версия графика</a>
+</div>
+{% endblock %}

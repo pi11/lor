@@ -1,0 +1,23 @@
+TEMPLATE_DIRS = (
+    "/work/htdocs/lor/forum/templates",
+)
+
+STATIC_URL = "http://127.0.0.1/lor/static/"
+MEDIA_ROOT = "/work/htdocs/lor/media/"
+MEDIA_URL = "http://127.0.0.1/lor/media/"
+
+MPLCONFIGDIR = "/tmp"
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',  # 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'lor',                      # Or path to database file if using sqlite3.
+        'USER': 'lor',                      # Not used with sqlite3.
+        'PASSWORD': 'lor',                  # Not used with sqlite3.
+        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+    }
+}
+
+LOR_USER = ""
+LOR_PASS = ""

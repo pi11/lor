@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Топ ньюс-мейкеров{% endblock %}
+{% block content %}
+<h1>Топ пользователей запостивших новости</h1>
+
+<ul>
+{% for u in users %}
+<li class="av {% cycle 'even' 'odd' %}">
+  <div class="y">{{ forloop.counter }}</div>
+  <!--<div class="y" style="width:150px; "><img src="{{ u.get_avatar }}" height="100%" /></div>-->
+  <div style="width:350px;">
+    <a href="{% url 'profile' username=u.username %}">{{ u.username }}</a>
+  </div> - <b>{{ u.news_count|intcomma }}</b>
+</li>
+{% endfor %}
+</ul>
+{% endblock %}

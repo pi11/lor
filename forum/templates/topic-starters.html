@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Пользователи по количеству начатых тем{% endblock %}
+{% block content %}
+<h1>Пользователи по количеству начатых тем. Страница ({{ page_id }} из {{ paginator.num_pages }})</h1>
+
+<ul>
+{% for u in page.object_list %}
+<li class="av {% cycle 'even' 'odd' %}"><div class="y">{{ forloop.counter|add:add_p }}</div> 
+  <div class="y" style="width:150px; "><img src="{{ u.get_avatar }}" height="100%" /></div>
+<div style="width:250px;"><a href="{% url 'profile' username=u.username %}">{{ u.username }}</a></div> - <b>{{ u.themes|intcomma }}</b></li>
+{% endfor %}
+</ul>
+{% include "paginator.html" %}
+
+{% endblock %}
